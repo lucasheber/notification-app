@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="manifest" href="./manifest.json">
+  <title>Document</title>
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+
+  <script async type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+  <!-- Compiled and minified JavaScript -->
+  <script async src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+  <!-- update the version number as needed -->
+  <script defer src="/__/firebase/5.5.5/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+  <script defer src="/__/firebase/5.5.5/firebase-auth.js"></script>
+  <script defer src="/__/firebase/5.5.5/firebase-database.js"></script>
+  <script defer src="/__/firebase/5.5.5/firebase-messaging.js"></script>
+  <script defer src="/__/firebase/5.5.5/firebase-storage.js"></script>
+  <!-- initialize the SDK after all desired features are loaded -->
+  <script defer src="/__/firebase/init.js"></script>
+
+</head>
+<body>
+
+</body>
+<script>
+
+/**
+* Function called when clicking the Login/Logout button.
+*/
+// [START buttoncallback]
+function toggleSignIn() {
+  if (!firebase.auth().currentUser) {
+    var provider = new firebase.auth.GithubAuthProvider();
+    provider.addScope('notification-app');
+    firebase.auth().signInWithRedirect(provider);
+
+  } else {
+    firebase.auth().signOut();
+  }
+}
+
+function initApp() {
+  firebase.auth().getRedirectResult().then(function(result) {
+    if (result.credential) {
+      var token = result.credential.accessToken;
+
+      console.log(token)
+    } else {
+      console.log('no have')
+    }
+    // The signed-in user info.
+    var user = result.user;
+  }).catch(function(error) {
+
+    var errorCode = error.code;
+    var errorMessage = error.message;
+
+    var email = error.email;
+
+    var credential = error.credential;
+
+    if (errorCode === 'auth/account-exists-with-different-credential') {
+      alert('You have already signed up with a different auth provider for that email.');
+
+    } else {
+      console.error(error);
+    }
+    // [END_EXCLUDE]
+  });
+  // [END getidptoken]
+  // Listening for auth state changes.
+  // [START authstatelistener]
+  firebase.auth().onAuthStateChanged(function(user) {
+    console.log(user);
+
+    if (user) {
+      // User is signed in.
+      var displayName = user.displayName;
+      var email = user.email;
+      var emailVerified = user.emailVerified;
+      var photoURL = user.photoURL;
+      var isAnonymous = user.isAnonymous;
+      var uid = user.uid;
+      var providerData = user.providerData;
+
+      console.log(user);
+    } else {
+
+    }
+  });
+}
+window.onload = function() {
+  initApp();
+};
+</script>
+</html>
