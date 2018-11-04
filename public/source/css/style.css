@@ -1,0 +1,15 @@
+
+body{ margin: 0; padding: 0; background-color: #fff;}
+
+
+.github-image{
+    background-image: url('../../images/github.png');
+    background-repeat: no-repeat, no-repeat;
+    background-position: center; /* Center the image */
+    background-size: cover;
+    height: 100%;
+    margin-top: 15%;
+}
+
+.card{min-height: 200px;}
+.background{ background-color: #1E88E5; width: 100%;}

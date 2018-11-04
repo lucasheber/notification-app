@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Firebase Hosting</title>
+    <link rel="icon" href="images/icons/icon-72x72.png" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="manifest" href="./manifest.json">
+    <title>Document</title>
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/5.5.5/firebase-app.js"></script>
@@ -15,83 +17,116 @@
     <script defer src="/__/firebase/5.5.5/firebase-storage.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
+    <script src="source/jquery/jquery.min.js" charset="utf-8"></script>
 
-    <style media="screen">
-    body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-    #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-    #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-    #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-    #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-    #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-    #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-    #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-    @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-    }
-    </style>
+    <link rel="stylesheet" href="source/css/style.css">
+    <link rel="stylesheet" href="source/materialize/css/materialize.min.css">
+    <script src="source/materialize/js/materialize.min.js" charset="utf-8"></script>
 </head>
 <body>
-    <div id="message">
-        <h2>Welcome</h2>
-        <h1>Firebase Hosting Setup Complete</h1>
-        <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-        <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    <div class="row">
+        <div class="col s12 center-align">
+            <a onclick="toggleSignIn()" class="waves-effect waves-light btn"><i class="material-icons right">cloud</i>button</a>
+        </div>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
-    <p id="token">&hellip;</p>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // firebase.auth().onAuthStateChanged(user => { });
 
 
-        firebase.messaging().requestPermission()
-        .then(() => {
-            // console.log('Have permission');
+</body>
+<script>
 
-            return firebase.messaging().getToken();
-        })
-        .then((token) => {
-            console.log(token);
-            document.getElementById('token').innerHTML = token;
+/**
+* Function called when clicking the Login/Logout button.
+*/
+// [START buttoncallback]
+function toggleSignIn() {
+    if (!firebase.auth().currentUser) {
+        // [START createprovider]
+        var provider = new firebase.auth.GithubAuthProvider();
+        // [END createprovider]
+        // [START addscopes]
+        provider.addScope('notification-app');
+        // [END addscopes]
+        // [START signin]
+        firebase.auth().signInWithRedirect(provider);
+        // [END signin]
+    } else {
+        // [START signout]
+        firebase.auth().signOut();
+        localStorage.clear();
+        // [END signout]
+    }
+    // [START_EXCLUDE]
+    // document.getElementById('quickstart-sign-in').disabled = true;
+    // [END_EXCLUDE]
+}
+// [END buttoncallback]
+/**
+* initApp handles setting up UI event listeners and registering Firebase auth listeners:
+*  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
+*    out, and that is where we update the UI.
+*  - firebase.auth().getRedirectResult(): This promise completes when the user gets back from
+*    the auth redirect flow. It is where you can get the OAuth access token from the IDP.
+*/
+function initApp() {
 
-            let user_data = JSON.parse(localStorage.getItem("user_data"));
-            user_data.github_token = localStorage.getItem("user_token");
-            user_data.registrationid = token;
-            user_data.permission = true;
+    firebase.auth().getRedirectResult().then(function(result) {
+        // console.log(result);
+        if (result.credential) {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            var token = result.credential.accessToken;
+            var username = result.additionalUserInfo.username;
 
-            firebase.database().ref('users/' + user_data.uid).set(user_data);
-        })
-        .catch((err) => {
-            console.log(err);
+            // document.getElementById('quickstart-oauthtoken').textContent = token;
 
-        });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+            localStorage.setItem("user_token", token);
+            localStorage.setItem("username", username);
 
-        firebase.messaging().onMessage((payload) =>{
-            console.log('OnMessage', payload);
-
-        });
-
-        try {
-            let app = firebase.app();
-            let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
-            document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-            console.error(e);
-            document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+        } else {
+            // document.getElementById('quickstart-oauthtoken').textContent = 'null';
+            // [END_EXCLUDE]
         }
 
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(function(reg) {
-                console.log('Successfully registered service worker', reg);
-            }).catch(function(err) {
-                console.warn('Error whilst registering service worker', err);
-            });
+        var user = result.user;
+    })
+    .catch(function(error) {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        var email = error.email;
+        var credential = error.credential;
+
+        if (errorCode === 'auth/account-exists-with-different-credential') {
+            alert('You have already signed up with a different auth provider for that email.');
+            // If you are using multiple auth providers on your app you should handle linking
+            // the user's accounts here.
+        } else {
+            console.error(error);
         }
     });
-    </script>
-</body>
+
+    firebase.auth().onAuthStateChanged(function(user) {
+
+        if (user) {
+            var user_data = {
+                displayName: user.displayName,
+                email: user.email,
+                emailVerified: user.emailVerified,
+                photoURL: user.photoURL,
+                isAnonymous: user.isAnonymous,
+                uid: user.uid,
+                providerData: user.providerData
+            };
+
+            localStorage.setItem("user_data", JSON.stringify(user_data));
+
+            window.location.href = 'home.html';
+        } else {
+            localStorage.clear();
+        }
+    });
+}
+
+window.onload = function() {
+    initApp();
+};
+</script>
 </html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/icons/icon-72x72.png" />
+    <title>Welcome to Firebase Hosting</title>
+    <link rel="manifest" href="./manifest.json">
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/5.5.5/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/5.5.5/firebase-auth.js"></script>
+    <script defer src="/__/firebase/5.5.5/firebase-database.js"></script>
+    <script defer src="/__/firebase/5.5.5/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/5.5.5/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+
+    <script defer src="/__/firebase/init.js"></script>
+    <script src="source/jquery/jquery.min.js" charset="utf-8"></script>
+
+    <link rel="stylesheet" href="source/css/style.css">
+    <link rel="stylesheet" href="source/materialize/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="source/materialize/js/materialize.min.js" charset="utf-8"></script>
+</head>
+<body>
+    <nav class="blue darken-1">
+        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">dehaze</i></a>
+    </nav>
+    <ul id="slide-out" class="sidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+
+                </div>
+                <a href="#user"><img class="circle image-person" src=""></a>
+                <a href="#name"><span class="white-text name"></span></a>
+                <a href="#email"><span class="white-text email"></span></a>
+            </div>
+        </li>
+        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+        <li><a href="#!">Second Link</a></li>
+        <li>
+            <div class="divider"></div>
+        </li>
+        <li><a class="subheader">Subheader</a></li>
+        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+    </ul>
+    <div class="row commits">
+
+    </div>
+</body>
+<script>
+$(document).ready(function(){
+    $('.sidenav').sidenav();
+
+    var user_data = JSON.parse(localStorage.getItem("user_data"))
+
+    $(".name").html(user_data.displayName);
+    $(".email").html(user_data.email);
+    $(".image-person").attr("src", user_data.photoURL);
+});
+document.addEventListener('DOMContentLoaded', function() {
+
+    firebase.messaging().requestPermission()
+    .then(() => {
+        return firebase.messaging().getToken();
+    })
+    .then((token) => {
+
+        var user_data = JSON.parse(localStorage.getItem("user_data"));
+        user_data.github_token = localStorage.getItem("user_token");
+        user_data.username = localStorage.getItem("username");
+        user_data.registrationid = token;
+        user_data.permission = true;
+
+        firebase.database().ref('users/' + user_data.uid).set(user_data);
+    })
+    .catch((err) => {
+        console.log(err);
+
+    });
+
+    firebase.messaging().onMessage((payload) =>{
+        console.log('OnMessage', payload);
+
+    });
+
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+            console.log('Successfully registered service worker', reg);
+        }).catch(function(err) {
+            console.warn('Error whilst registering service worker', err);
+        });
+    }
+
+    var user_data = JSON.parse(localStorage.getItem("user_data"));
+    var users = firebase.database().ref('commits/' + user_data.uid).limitToFirst(20);
+
+    users.on('value', function(snapshot) {
+        var commits = "";
+
+        $.each(snapshot.val(), function(key, value){
+            commits += "<div class='col s12 m6 l4'>" +
+            "<div class='card'>" +
+            "<div class='card-content'>" +
+            "<span class='card-title activator grey-text text-darken-4'>Repositório: "+ value.repository.name +"<i class='material-icons right'>more_vert</i></span>" +
+            "<p>" +
+            "<h5>Commit</h5>" +
+            "Author: "+ value.author_name +"<br>Email: "+ value.author_email +"<br>" +
+            "Message: " + value.message + "<br>Date: " + dataFormatada(value.timestamp)  +
+            "</p>" +
+            "</div>" +
+            "<div class='card-reveal'>" +
+            "<span class='card-title grey-text text-darken-4'>"+ value.repository.name +"<i class='material-icons right'>close</i></span>" +
+            "<p>"+
+
+            "</p>" +
+            "</div>" +
+            "</div>" +
+            "</div>\n";
+        });
+
+        $(".commits").html(commits);
+    });
+
+});
+
+function dataFormatada(d) {
+    var data = new Date(d * 1000),
+    dia  = data.getDate(),
+    mes  = data.getMonth() + 1,
+    ano  = data.getFullYear();
+    return [dia, mes, ano].join('/') + ' ' + data.getHours() + ':' + data.getMinutes() + ':' + data.getSeconds();
+}
+</script>
+</html>
