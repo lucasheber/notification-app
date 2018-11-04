@@ -35,32 +35,75 @@
                 <div class="background">
 
                 </div>
-                <a href="#user"><img class="circle image-person" src=""></a>
-                <a href="#name"><span class="white-text name"></span></a>
-                <a href="#email"><span class="white-text email"></span></a>
+                <a><img class="circle image-person" src=""></a>
+                <a><span class="white-text name"></span></a>
+                <a><span class="white-text email"></span></a>
             </div>
         </li>
-        <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
-        <li><a href="#!">Second Link</a></li>
+        <li class="handleWebHook"><a>Adicionado Webhooks</a></li>
+        <li class="handleCommit"><a>Commits</a></li>
         <li>
             <div class="divider"></div>
         </li>
-        <li><a class="subheader">Subheader</a></li>
-        <li><a class="waves-effect" href="#!">Third Link With Waves</a></li>
+
+        <button onclick="sair()" class="btn" type="button" name="button">Sair</button>
     </ul>
     <div class="row commits">
 
     </div>
+
+    <div class="row howtodo">
+        <div class="col s12">
+            <h5>Adicionando WebHook</h5>
+            <p>
+                To set up a webhook, go to the settings page of your repository or organization. From there,
+                click Webhooks, then Add webhook.
+
+                <ol>
+                    <li>Em <i>Payload URL</i> coloque o seguinte: <pre>http://minhaurl.com.br</pre> </li>
+                    <li>Em <i>Content type: </i> <pre>x-www-form-urlencoded</pre> </li>
+                    <li>Em <i>Which events would you like to trigger this webhook?</i> selecione <pre>Just the push event</pre> </li>
+                    <li>Clique em <pre>ADD WebHook</pre> </li>
+                </ol>
+
+            </p>
+
+
+            <img class="materialboxed" width="100%;" height="100%" src="images/register-webhook.gif">
+
+        </div>
+    </div>
 </body>
 <script>
 $(document).ready(function(){
-    $('.sidenav').sidenav();
+    var sidenav = $('.sidenav').sidenav();
+
+    $(".commits").hide();
+    $(".howtodo").show();
 
     var user_data = JSON.parse(localStorage.getItem("user_data"))
 
     $(".name").html(user_data.displayName);
     $(".email").html(user_data.email);
     $(".image-person").attr("src", user_data.photoURL);
+
+
+    $(".handleCommit").on("click", function() {
+        $(".howtodo").hide();
+        $(".commits").show();
+        $('.sidenav').sidenav('close');
+
+    });
+
+    $(".handleWebHook").on("click", function() {
+        $(".commits").hide();
+        $(".howtodo").show();
+        $('.sidenav').sidenav('close');
+    });
+
+    function sair() {
+        M.toast({html: 'I am a toast!'})
+    }
 });
 document.addEventListener('DOMContentLoaded', function() {
 
