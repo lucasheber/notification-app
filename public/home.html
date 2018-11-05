@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/icons/icon-72x72.png" />
-    <title>Welcome to Firebase Hosting</title>
+    <title>NotifyMe :: Home :: Lucas Heber</title>
     <link rel="manifest" href="./manifest.json">
 
     <!-- update the version number as needed -->
@@ -46,7 +46,9 @@
             <div class="divider"></div>
         </li>
 
-        <button onclick="sair()" class="btn" type="button" name="button">Sair</button>
+        <li class="center-align">
+            <button onclick="sair()" class="btn center-align">Sair</button>
+        </li>
     </ul>
     <div class="row commits">
 
@@ -60,7 +62,7 @@
                 click Webhooks, then Add webhook.
 
                 <ol>
-                    <li>Em <i>Payload URL</i> coloque o seguinte: <pre>http://minhaurl.com.br</pre> </li>
+                    <li>Em <i>Payload URL</i> coloque o seguinte: <pre>https://lucasheber-notifyme.herokuapp.com/</pre> </li>
                     <li>Em <i>Content type: </i> <pre>x-www-form-urlencoded</pre> </li>
                     <li>Em <i>Which events would you like to trigger this webhook?</i> selecione <pre>Just the push event</pre> </li>
                     <li>Clique em <pre>ADD WebHook</pre> </li>
@@ -75,6 +77,7 @@
     </div>
 </body>
 <script>
+var arr = [];
 $(document).ready(function(){
     var sidenav = $('.sidenav').sidenav();
 
@@ -101,11 +104,9 @@ $(document).ready(function(){
         $('.sidenav').sidenav('close');
     });
 
-    function sair() {
-        M.toast({html: 'I am a toast!'})
-    }
 });
 document.addEventListener('DOMContentLoaded', function() {
+
 
     firebase.messaging().requestPermission()
     .then(() => {
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     firebase.messaging().onMessage((payload) =>{
-        console.log('OnMessage', payload);
+        // console.log('OnMessage', payload);
 
     });
 
@@ -140,31 +141,34 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var user_data = JSON.parse(localStorage.getItem("user_data"));
-    var users = firebase.database().ref('commits/' + user_data.uid).limitToFirst(20);
 
-    users.on('value', function(snapshot) {
-        var commits = "";
+    var commits = "";
+    firebase.database().ref('commits/' + user_data.uid).orderByChild("timestamp").limitToLast(20).on("child_added", function(snapshot, prevChildKey) {
+        var value = snapshot.val();
 
-        $.each(snapshot.val(), function(key, value){
-            commits += "<div class='col s12 m6 l4'>" +
-            "<div class='card'>" +
-            "<div class='card-content'>" +
-            "<span class='card-title activator grey-text text-darken-4'>Repositório: "+ value.repository.name +"<i class='material-icons right'>more_vert</i></span>" +
-            "<p>" +
-            "<h5>Commit</h5>" +
-            "Author: "+ value.author_name +"<br>Email: "+ value.author_email +"<br>" +
-            "Message: " + value.message + "<br>Date: " + dataFormatada(value.timestamp)  +
-            "</p>" +
-            "</div>" +
-            "<div class='card-reveal'>" +
-            "<span class='card-title grey-text text-darken-4'>"+ value.repository.name +"<i class='material-icons right'>close</i></span>" +
-            "<p>"+
 
-            "</p>" +
-            "</div>" +
-            "</div>" +
-            "</div>\n";
-        });
+        var modified = typeof(value.files_modified) == 'undefined' ? '' : value.files_modified;
+        var removed = typeof(value.files_removed) == 'undefined' ? '' : value.files_removed;
+        var added = typeof(value.files_added) == 'undefined' ? '' : value.files_added;
+
+        commits += "<div class='col s12 m6 l4'>" +
+        "<div class='card'>" +
+        "<div class='card-content'>" +
+        "<span class='card-title activator grey-text text-darken-4'>Repositório: "+ value.repository.name +"<i class='material-icons right'>more_vert</i></span>" +
+        "<p>" +
+        "<b>Author</b>: "+ value.author_name +"<br><b>Email</b>: "+ value.author_email +"<br>" +
+        "<b>Message</b>: " + value.message + "<br><b>Date</b>: " + dataFormatada(value.timestamp * -1)  +
+        "</p>" +
+        "</div>" +
+        "<div class='card-reveal'>" +
+        "<span class='card-title grey-text text-darken-4'>Alterações<i class='material-icons right'>close</i></span>" +
+        "<p> <b>Modificados</b>: ["+ modified + "]<br>" +
+        "<b>Removidos</b>: ["+ removed  + "]<br>" +
+        "<b>Adicionados</b>: ["+ added + "]<br>" +
+        "</p>" +
+        "</div>" +
+        "</div>" +
+        "</div>\n";
 
         $(".commits").html(commits);
     });
@@ -177,6 +181,22 @@ function dataFormatada(d) {
     mes  = data.getMonth() + 1,
     ano  = data.getFullYear();
     return [dia, mes, ano].join('/') + ' ' + data.getHours() + ':' + data.getMinutes() + ':' + data.getSeconds();
+}
+
+function sair() {
+    firebase.auth().signOut();
+
+    firebase.messaging().getToken()
+    .then(function(currentToken) {
+        firebase.messaging().deleteToken(currentToken).then(function() {
+            // console.log('Token deleted.');
+            localStorage.clear();
+
+            window.location.href = 'index.html';
+        }).catch(function(err) {
+            console.log('Unable to delete token. ', err);
+        });
+    });
 }
 </script>
 </html>

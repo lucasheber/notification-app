@@ -6,7 +6,7 @@
     <link rel="icon" href="images/icons/icon-72x72.png" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="manifest" href="./manifest.json">
-    <title>Document</title>
+    <title>NotifyMe :: Lucas Heber</title>
 
     <!-- update the version number as needed -->
     <script defer src="/__/firebase/5.5.5/firebase-app.js"></script>
@@ -25,63 +25,43 @@
 </head>
 <body>
     <div class="row div">
+        <div class="col s12 m6">
+            <img src="images/github.png" width="100%" alt="Logo GitHub">
+        </div>
         <div class="col s12 center-align">
-            <a onclick="toggleSignIn()" class="waves-effect waves-light btn">Começar</a>
+            <button id="signIn" onclick="toggleSignIn()" class="waves-effect waves-light btn darken-1">Autenticar com GitHub</button>
         </div>
     </div>
 </body>
 <script>
 
-/**
-* Function called when clicking the Login/Logout button.
-*/
-// [START buttoncallback]
 function toggleSignIn() {
     if (!firebase.auth().currentUser) {
-        // [START createprovider]
         var provider = new firebase.auth.GithubAuthProvider();
-        // [END createprovider]
-        // [START addscopes]
+
         provider.addScope('notification-app');
-        // [END addscopes]
-        // [START signin]
+
         firebase.auth().signInWithRedirect(provider);
-        // [END signin]
     } else {
-        // [START signout]
         firebase.auth().signOut();
         localStorage.clear();
-        // [END signout]
     }
-    // [START_EXCLUDE]
-    // document.getElementById('quickstart-sign-in').disabled = true;
-    // [END_EXCLUDE]
 }
-// [END buttoncallback]
-/**
-* initApp handles setting up UI event listeners and registering Firebase auth listeners:
-*  - firebase.auth().onAuthStateChanged: This listener is called when the user is signed in or
-*    out, and that is where we update the UI.
-*  - firebase.auth().getRedirectResult(): This promise completes when the user gets back from
-*    the auth redirect flow. It is where you can get the OAuth access token from the IDP.
-*/
+
 function initApp() {
 
+    $("#signIn").prop("disabled", true);
+
     firebase.auth().getRedirectResult().then(function(result) {
-        // console.log(result);
         if (result.credential) {
-            // This gives you a Google Access Token. You can use it to access the Google API.
             var token = result.credential.accessToken;
             var username = result.additionalUserInfo.username;
-
-            // document.getElementById('quickstart-oauthtoken').textContent = token;
 
             localStorage.setItem("user_token", token);
             localStorage.setItem("username", username);
 
         } else {
-            // document.getElementById('quickstart-oauthtoken').textContent = 'null';
-            // [END_EXCLUDE]
+            $("#signIn").prop("disabled", false);
         }
 
         var user = result.user;
