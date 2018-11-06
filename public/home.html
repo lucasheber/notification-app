@@ -26,9 +26,11 @@
     <script src="source/materialize/js/materialize.min.js" charset="utf-8"></script>
 </head>
 <body>
-    <nav class="blue darken-1">
-        <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">dehaze</i></a>
-    </nav>
+    <div class="navbar-fixed">
+        <nav class="blue darken-1">
+            <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons">dehaze</i></a>
+        </nav>
+    </div>
     <ul id="slide-out" class="sidenav">
         <li>
             <div class="user-view">
@@ -147,9 +149,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var value = snapshot.val();
 
 
-        var modified = typeof(value.files_modified) == 'undefined' ? '' : value.files_modified;
-        var removed = typeof(value.files_removed) == 'undefined' ? '' : value.files_removed;
-        var added = typeof(value.files_added) == 'undefined' ? '' : value.files_added;
+        var modified = typeof(value.files_modified) == 'undefined' ? '' : replaceAll(value.files_modified.toString(), ',', '\n');
+        var removed = typeof(value.files_removed) == 'undefined' ? '' : replaceAll(value.files_removed.toString(), ',', '\n');
+        var added = typeof(value.files_added) == 'undefined' ? '' : replaceAll(value.files_added.toString(), ',', '\n');
+
+
 
         commits += "<div class='col s12 m6 l4'>" +
         "<div class='card'>" +
@@ -162,9 +166,9 @@ document.addEventListener('DOMContentLoaded', function() {
         "</div>" +
         "<div class='card-reveal'>" +
         "<span class='card-title grey-text text-darken-4'>Alterações<i class='material-icons right'>close</i></span>" +
-        "<p> <b>Modificados</b>: ["+ modified + "]<br>" +
-        "<b>Removidos</b>: ["+ removed  + "]<br>" +
-        "<b>Adicionados</b>: ["+ added + "]<br>" +
+        "<p><b>Modificados</b>:<br>"+ modified + "<br>" + "</p>" +
+        "<p><b>Removidos</b>:<br>"+ removed  + "<br>" + "</p>" +
+        "<p><b>Adicionados</b>:<br>"+ added + "<br>" + "</p>" +
         "</p>" +
         "</div>" +
         "</div>" +
@@ -197,6 +201,14 @@ function sair() {
             console.log('Unable to delete token. ', err);
         });
     });
+}
+
+function escapeRegExp(str) {
+    return str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+}
+
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(escapeRegExp(find), 'g'), replace);
 }
 </script>
 </html>
