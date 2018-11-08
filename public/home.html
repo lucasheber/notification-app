@@ -44,6 +44,7 @@
         </li>
         <li class="handleWebHook"><a>Adicionado Webhooks</a></li>
         <li class="handleCommit"><a>Commits</a></li>
+        <li class="handleIssues"><a>Issues</a></li>
         <li>
             <div class="divider"></div>
         </li>
@@ -77,6 +78,10 @@
 
         </div>
     </div>
+
+    <div class="row issues">
+
+    </div>
 </body>
 <script>
 var arr = [];
@@ -95,6 +100,7 @@ $(document).ready(function(){
 
     $(".handleCommit").on("click", function() {
         $(".howtodo").hide();
+        $(".issues").hide();
         $(".commits").show();
         $('.sidenav').sidenav('close');
 
@@ -102,14 +108,32 @@ $(document).ready(function(){
 
     $(".handleWebHook").on("click", function() {
         $(".commits").hide();
+        $(".issues").hide();
         $(".howtodo").show();
         $('.sidenav').sidenav('close');
     });
 
+    $(".handleIssues").on("click", function() {
+        $(".commits").hide();
+        $(".howtodo").hide();
+        $(".issues").show();
+        $('.sidenav').sidenav('close');
+    });
+
 });
+
 document.addEventListener('DOMContentLoaded', function() {
 
+    // Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').then(function(reg) {
+            console.log('Successfully registered service worker', reg);
+        }).catch(function(err) {
+            console.warn('Error whilst registering service worker', err);
+        });
+    }
 
+    // Permission to recive push
     firebase.messaging().requestPermission()
     .then(() => {
         return firebase.messaging().getToken();
@@ -126,34 +150,22 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .catch((err) => {
         console.log(err);
-
     });
 
+    // Recive push
     firebase.messaging().onMessage((payload) =>{
-        // console.log('OnMessage', payload);
-
     });
-
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js').then(function(reg) {
-            console.log('Successfully registered service worker', reg);
-        }).catch(function(err) {
-            console.warn('Error whilst registering service worker', err);
-        });
-    }
 
     var user_data = JSON.parse(localStorage.getItem("user_data"));
 
     var commits = "";
-    firebase.database().ref('commits/' + user_data.uid).orderByChild("timestamp").limitToLast(20).on("child_added", function(snapshot, prevChildKey) {
+    var database = firebase.database();
+    database.ref('commits/' + user_data.uid).orderByChild("timestamp").limitToLast(20).on("child_added", function(snapshot, prevChildKey) {
         var value = snapshot.val();
-
 
         var modified = typeof(value.files_modified) == 'undefined' ? '' : replaceAll(value.files_modified.toString(), ',', '\n');
         var removed = typeof(value.files_removed) == 'undefined' ? '' : replaceAll(value.files_removed.toString(), ',', '\n');
         var added = typeof(value.files_added) == 'undefined' ? '' : replaceAll(value.files_added.toString(), ',', '\n');
-
-
 
         commits += "<div class='col s12 m6 l4'>" +
         "<div class='card'>" +
@@ -174,7 +186,34 @@ document.addEventListener('DOMContentLoaded', function() {
         "</div>" +
         "</div>\n";
 
+        $(".commits").html("");
         $(".commits").html(commits);
+    });
+
+    var issues = "";
+    database.ref('issues/' + user_data.uid).orderByKey().on("child_added", function(snapshot) {
+        var value = snapshot.val();
+
+        issues +=
+        "<div class='col s12 m4'>" +
+            "<div class='card horizontal'>" +
+                "<div class='card-stacked'>" +
+                    "<div class='card-content'>" +
+                        "<h6>Issue <b>#"+ value.number +"</b></h6>" +
+                        "<p>Status: "+ (value.state == 'open' ? 'Aberto' : 'Fechado') +"</p>" +
+                        "<p>Criada: "+ dataFormatada(value.created_at * -1) +"</p>";
+
+                        if (typeof(value.closed_at) != 'undefined')
+                            issues += "<p>Fechado: "+ dataFormatada(value.closed_at * -1) +"</p>";
+
+                        issues += "<p>Titulo: "+ value.title +"</p>" +
+                        "<p>Comentário: "+ value.body +"</p>" +
+                    "</div>" +
+                "</div>" +
+            "</div>" +
+        "</div>";
+
+        $(".issues").html(issues);
     });
 
 });
