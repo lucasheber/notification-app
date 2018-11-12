@@ -1,10 +1,65 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head>
-        <meta charset="utf-8">
-        <title></title>
-    </head>
-    <body>
-        <h1>Notification App</h1>
-    </body>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+    <title>Notification App</title>
+
+    <!-- CSS  -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body>
+    <nav class="light-blue lighten-1" role="navigation">
+        <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"></a>
+            <ul class="right hide-on-med-and-down">
+                <li><a href="./index.html">Home</a></li>
+            </ul>
+
+            <ul id="nav-mobile" class="sidenav">
+                <li><a href="./index.html">Navbar Link</a></li>
+            </ul>
+            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+        </div>
+    </nav>
+
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <br><br>
+            <h1 class="header center orange-text">Notification App</h1>
+            <div class="row center">
+                <h5 class="header col s12 light">Receba notificações dos <strong>commits</strong> e <strong>issues</strong> realizados em seu repositório.</h5>
+            </div>
+            <br><br>
+            <div class="row ">
+                <div class="col s12 m6">
+
+                    <ul>
+                        <li>Acesse o site <a href="https://notification-app.firebase.io">https://notification-app.firebase.io</a></li>
+                        <li>Faça a autenticação com GitHub.</li>
+                        <li>Permita receber notificações.</li>
+                        <li>Siga os passos descritos em no Menu <i>Adicionando WebHook</i> </li>
+                    </ul>
+
+                </div>
+            </div>
+            <br><br>
+        </div>
+    </div>
+
+    <footer class="page-footer orange">
+        <div class="footer-copyright">
+            <div class="container">
+                Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+            </div>
+        </div>
+    </footer>
+
+    <!--  Scripts-->
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+
+</body>
 </html>
