@@ -4,60 +4,86 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <title>Notification App</title>
-
+    
     <!-- CSS  -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
     <link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
 </head>
 <body>
-    <nav class="light-blue lighten-1" role="navigation">
-        <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo"></a>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="./index.html">Home</a></li>
-            </ul>
-
-            <ul id="nav-mobile" class="sidenav">
-                <li><a href="./index.html">Navbar Link</a></li>
-            </ul>
-            <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
-        </div>
-    </nav>
-
-    <div class="section no-pad-bot" id="index-banner">
+    <div class="section no-pad-bot">
         <div class="container">
-            <br><br>
-            <h1 class="header center orange-text">Notification App</h1>
+            <h1 class="header center orange-text">NotifyMe</h1>
             <div class="row center">
                 <h5 class="header col s12 light">Receba notificações dos <strong>commits</strong> e <strong>issues</strong> realizados em seu repositório.</h5>
             </div>
-            <br><br>
-            <div class="row ">
-                <div class="col s12 m6">
-                    <ul>
-                        <li>Acesse o site <a href="https://notification-app.firebase.io">https://notification-app.firebase.io</a></li>
-                        <li>Faça a autenticação com GitHub.</li>
-                        <li>Permita receber notificações.</li>
-                        <li>Siga os passos descritos em no Menu <i>Adicionando WebHook</i> </li>
-                    </ul>
+            <br>
+            
+            <div class="row center">
+                <div class="col s12 m12">
+                    <a href="https://github.com/lucasheber/notification-app"  class="btn-large waves-effect waves-light teal light-blue lighten-1">
+                        <i class="fab fa-github left"></i> Ver no GitHub
+                    </a>
+                    <a href="https://notification-app.firebase.io"  class="btn-large waves-effect waves-light teal light-blue lighten-1">
+                        <i class="fas fa-globe-americas left"></i>Acessar App
+                    </a>
                 </div>
             </div>
-            <br><br>
+            
+            <div class="row ">
+                <div class="col s12 m12">
+                    <section>
+                        <h4 class="header center">Sobre o aplicativo</h4> <hr>
+                        
+                        <p class="flow-text justify">
+                            O <strong>NotifyMe</strong> é um Web App (PWA) que monitora alterações em tempo real de um
+                            repositório do GitHub.
+                        </p>
+                        
+                        <p class="flow-text">
+                            A cada <b>commit</b> ou <b>issue</b> feito no repositório uma noticação push é enviada para os
+                            membros do repositório.
+                        </p>
+                        
+                        <p class="flow-text justify">
+                            No PWA é mostrado os <i>isssues</i> abertos e fechados além dos <i>commits</i>, mostrando o autor,
+                            a mensagem e a data, e também quais arquivos foram modificados, alterados ou excluídos.
+                            
+                        </p>
+                    </section>
+                </div>
+            </div>
+            
+            <section>
+                <h4 class="center">O que foi usado</h4> <hr>
+                <div class="row center">
+                    <div class="col s12 m4">
+                        <img src="./img/firebase.jpg" width="200" alt="Fireabase API">
+                    </div>
+                    <div class="col s12 m4">
+                        <img src="./img/github.png" width="200" alt="GitHub API">
+                    </div>
+                    <div class="col s12 m4">
+                        <img src="./img/php.png" width="200" alt="PHP Language">
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
-
-    <footer class="page-footer orange">
+    
+    <footer class="page-footer blue">
         <div class="footer-copyright">
-            <div class="container">
-                Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+            <div class="container center">
+                &copy 2018 NotifyMe | Lucas Heber
             </div>
         </div>
     </footer>
-
+    
     <!--  Scripts-->
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/materialize.js"></script>
     <script src="js/init.js"></script>
-
+    
 </body>
 </html>
